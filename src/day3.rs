@@ -9,6 +9,11 @@ pub struct Claim {
     h: u32,
 }
 
+#[aoc(day3, part1, a_warmup)]
+pub fn warmup(inp: &str) -> usize {
+    inp.lines().count()
+}
+
 #[aoc_generator(day3, part1, w_vec)]
 pub fn to_claims(inp: &str) -> Vec<Claim> {
     let re = Regex::new(r"^#(\d+) @ (\d+),(\d+): (\d+)x(\d+)").unwrap();
@@ -48,6 +53,37 @@ pub fn count_overlaps(claims: &Vec<Claim>) -> u32 {
     return count;
 }
 
+#[aoc(day3, part1, more_iterator)]
+pub fn count_overlaps_iter(inp: &str) -> usize {
+    let mut squares: [[u8; 1024]; 1024] = [[0; 1024]; 1024];
+    let re = Regex::new(r"^#(\d+) @ (\d+),(\d+): (\d+)x(\d+)").unwrap();
+
+    let claims = inp.lines().into_iter().map(|i| {
+        let caps = re.captures(i).unwrap();
+        Claim {
+            id: caps[1].parse().unwrap(),
+            x: caps[2].parse().unwrap(),
+            y: caps[3].parse().unwrap(),
+            w: caps[4].parse().unwrap(),
+            h: caps[5].parse().unwrap(),
+        }
+    });
+
+    for claim in claims {
+        for i in claim.x..(claim.x + claim.w) {
+            for j in claim.y..(claim.y + claim.h) {
+                squares[j as usize][i as usize] += 1;
+            }
+        }
+    }
+
+    squares
+        .iter()
+        .flat_map(|s| s.iter())
+        .filter(|&x| *x > 1)
+        .count()
+}
+
 #[aoc(day3, part1, no_vec)]
 pub fn count_overlaps_all(inp: &str) -> u32 {
     let mut squares: [u8; 1_000_000] = [0; 1_000_000];
@@ -55,7 +91,7 @@ pub fn count_overlaps_all(inp: &str) -> u32 {
 
     let re = Regex::new(r"^#(\d+) @ (\d+),(\d+): (\d+)x(\d+)").unwrap();
 
-    let claims = inp.lines().into_iter().map(move |i| {
+    let claims = inp.lines().into_iter().map(|i| {
         let caps = re.captures(i).unwrap();
         Claim {
             id: caps[1].parse().unwrap(),
