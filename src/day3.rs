@@ -34,13 +34,13 @@ pub fn to_claims(inp: &str) -> Vec<Claim> {
 
 #[aoc(day3, part1, w_vec)]
 pub fn count_overlaps(claims: &Vec<Claim>) -> u32 {
-    let mut squares: [u8; 1_000_000] = [0; 1_000_000];
+    let mut squares: [u8; 1_048_576] = [0; 1_048_576];
     let mut count = 0;
 
     for claim in claims {
         for i in claim.x..(claim.x + claim.w) {
             for j in claim.y..(claim.y + claim.h) {
-                squares[(j * 1000 + i) as usize] += 1;
+                squares[(j * 1024 + i) as usize] += 1;
             }
         }
     }

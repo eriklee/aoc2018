@@ -57,9 +57,9 @@ fn group_guard_spans(spans: &Vec<Span>) -> HashMap<GuardId, Vec<(Time, Time)>> {
 pub fn part1(spans: &Vec<Span>) -> usize {
     let guard_spans = group_guard_spans(spans);
 
-    let (_time, sleepiest_guard): (u16, u16) = guard_spans
+    let (_time, sleepiest_guard): (u16, &u16) = guard_spans
         .iter()
-        .map(|(&guard, spans)| {
+        .map(|(guard, spans)| {
             (((*spans).iter().map(|(s, w)| (w - s) as u16).sum()), guard) //flip them to use max
         })
         .max()
@@ -67,7 +67,7 @@ pub fn part1(spans: &Vec<Span>) -> usize {
 
     let mut minutes: [u8; 60] = [0; 60];
 
-    for (s, w) in guard_spans.get(&sleepiest_guard).unwrap().iter() {
+    for (s, w) in guard_spans.get(sleepiest_guard).unwrap().iter() {
         for x in *s..*w {
             minutes[x as usize] += 1
         }
@@ -81,7 +81,7 @@ pub fn part1(spans: &Vec<Span>) -> usize {
             max = *t
         }
     }
-    sleepiest_guard as usize * sleepiest_minute
+    (*sleepiest_guard) as usize * sleepiest_minute
 }
 
 #[aoc(day4, part2)]
@@ -91,7 +91,7 @@ pub fn part2(spans: &Vec<Span>) -> usize {
     let mut sleepiest_guard = 0;
     let mut max = 0;
 
-    for (g, spans) in guard_spans.iter() {
+    for (&g, spans) in guard_spans.iter() {
         let mut minutes: [u8; 60] = [0; 60];
 
         for (s, w) in spans.iter() {
@@ -100,11 +100,11 @@ pub fn part2(spans: &Vec<Span>) -> usize {
             }
         }
 
-        for (m, t) in minutes.iter().enumerate() {
-            if *t > max {
+        for (m, &t) in minutes.iter().enumerate() {
+            if t > max {
                 sleepiest_minute = m;
-                sleepiest_guard = *g;
-                max = *t;
+                sleepiest_guard = g;
+                max = t;
             }
         }
     }
