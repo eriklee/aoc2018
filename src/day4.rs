@@ -67,7 +67,7 @@ pub fn part1(spans: &Vec<Span>) -> usize {
 
     let mut minutes: [u8; 60] = [0; 60];
 
-    for (s, w) in guard_spans.get(sleepiest_guard).unwrap().iter() {
+    for (s, w) in guard_spans.get(sleepiest_guard).unwrap().into_iter() {
         for x in *s..*w {
             minutes[x as usize] += 1
         }
@@ -91,11 +91,11 @@ pub fn part2(spans: &Vec<Span>) -> usize {
     let mut sleepiest_guard = 0;
     let mut max = 0;
 
-    for (&g, spans) in guard_spans.iter() {
+    for (g, spans) in guard_spans.into_iter() {
         let mut minutes: [u8; 60] = [0; 60];
 
-        for (s, w) in spans.iter() {
-            for x in *s..*w {
+        for (s, w) in spans.into_iter() {
+            for x in s..w {
                 minutes[x as usize] += 1
             }
         }
