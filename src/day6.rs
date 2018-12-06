@@ -94,7 +94,7 @@ pub fn part1_io(points: &Vec<(Id, Coord)>) -> usize {
 
 #[aoc(day6, part2)]
 pub fn part2(points: &Vec<(Id, Coord)>) -> usize {
-    let (x_max, y_max) = get_bounds(points);
+    let (x_max, y_max) = get_bounds_fold(points);
     let mut res = 0;
 
     for x in 0..x_max {
@@ -152,5 +152,12 @@ fn get_bounds(inp: &Vec<(Id, Coord)>) -> (usize, usize) {
             y_max = y
         }
     }
+    (x_max as usize, y_max as usize)
+}
+
+fn get_bounds_fold(inp: &Vec<(Id, Coord)>) -> (usize, usize) {
+    let (x_max, y_max) = inp.into_iter().fold((0, 0), |(x_max, y_max), (_, (x, y))| {
+        (std::cmp::max(*x, x_max), std::cmp::max(*y, y_max))
+    });
     (x_max as usize, y_max as usize)
 }
