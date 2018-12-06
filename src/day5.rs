@@ -33,15 +33,28 @@ fn dedup(nums: &[u8], bad: u8) -> Vec<u8> {
 
 #[aoc(day5, part2, maybe_cleaner)]
 fn part2_2(inp: &[u8]) -> usize {
+    let cleaned = initial_clean(inp);
     (('A' as u8)..('Z' as u8))
-        .map(|bad| dedup2(inp, bad))
+        .map(|bad| dedup2(&cleaned, bad))
         .min()
         .unwrap_or(0)
 }
 
-fn dedup2(nums: &[u8], bad: u8) -> usize {
+fn initial_clean(nums: &[u8]) -> Vec<u8> {
     let mut res = Vec::new();
-    for &y in nums.into_iter().filter(|&x| x & (255 - 32) != bad) {
+    for &y in nums.into_iter() {
+        if res.last().map(|&l| l ^ y == 32).unwrap_or(false) {
+            res.pop();
+        } else {
+            res.push(y);
+        }
+    }
+    res
+}
+
+fn dedup2(nums: &Vec<u8>, bad: u8) -> usize {
+    let mut res = Vec::new();
+    for y in nums.into_iter().filter(|&x| x & (255 - 32) != bad) {
         if res.last().map(|&l| l ^ y == 32).unwrap_or(false) {
             res.pop();
         } else {
