@@ -1,3 +1,4 @@
+#![feature(vec_remove_item)]
 extern crate aoc_runner;
 
 #[macro_use]
@@ -9,5 +10,6 @@ pub mod day3;
 pub mod day4;
 pub mod day5;
 pub mod day6;
+pub mod day7;
 
 aoc_lib!{ year = 2018 }
