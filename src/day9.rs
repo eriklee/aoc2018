@@ -135,10 +135,10 @@ impl CircBuffer {
         match self.cw.pop() {
             Some(new_focus) => self.focus = new_focus,
             None => {
-                // It's probably much better to reuse our potentially big vecs
+                // It's probably much better to reuse our potentially high-capacity vecs
                 std::mem::swap(&mut self.cw, &mut self.ccw);
                 self.cw.reverse();
-                self.focus = self.cw.pop().expect("Tried to pop from a 1 element buffer");
+                self.focus = self.cw.pop().expect("Something's gone wrong cw rotation");
             }
         };
     }
@@ -151,10 +151,7 @@ impl CircBuffer {
             None => {
                 std::mem::swap(&mut self.cw, &mut self.ccw);
                 self.ccw.reverse();
-                self.focus = self
-                    .ccw
-                    .pop()
-                    .expect("Tried to pop from a 1 element buffer");
+                self.focus = self.ccw.pop().expect("Something's gone wrong ccw rotation");
             }
         };
     }
