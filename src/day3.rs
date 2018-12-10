@@ -18,7 +18,6 @@ pub fn warmup(inp: &str) -> usize {
 pub fn to_claims(inp: &str) -> Vec<Claim> {
     let re = Regex::new(r"^#(\d+) @ (\d+),(\d+): (\d+)x(\d+)").unwrap();
     inp.lines()
-        .into_iter()
         .map(move |i| {
             let caps = re.captures(i).unwrap();
             Claim {
@@ -33,7 +32,7 @@ pub fn to_claims(inp: &str) -> Vec<Claim> {
 }
 
 #[aoc(day3, part1, w_vec)]
-pub fn count_overlaps(claims: &Vec<Claim>) -> u32 {
+pub fn count_overlaps(claims: &[Claim]) -> u32 {
     let mut squares: [u8; 1_048_576] = [0; 1_048_576];
     let mut count = 0;
 
@@ -50,7 +49,7 @@ pub fn count_overlaps(claims: &Vec<Claim>) -> u32 {
             count += 1
         }
     }
-    return count;
+    count
 }
 
 #[aoc(day3, part1, more_iterator)]
@@ -58,7 +57,7 @@ pub fn count_overlaps_iter(inp: &str) -> usize {
     let mut squares: [[u8; 1024]; 1024] = [[0; 1024]; 1024];
     let re = Regex::new(r"^#(\d+) @ (\d+),(\d+): (\d+)x(\d+)").unwrap();
 
-    let claims = inp.lines().into_iter().map(|i| {
+    let claims = inp.lines().map(|i| {
         let caps = re.captures(i).unwrap();
         Claim {
             id: caps[1].parse().unwrap(),
@@ -91,7 +90,7 @@ pub fn count_overlaps_all(inp: &str) -> u32 {
 
     let re = Regex::new(r"^#(\d+) @ (\d+),(\d+): (\d+)x(\d+)").unwrap();
 
-    let claims = inp.lines().into_iter().map(|i| {
+    let claims = inp.lines().map(|i| {
         let caps = re.captures(i).unwrap();
         Claim {
             id: caps[1].parse().unwrap(),
@@ -115,14 +114,13 @@ pub fn count_overlaps_all(inp: &str) -> u32 {
             count += 1
         }
     }
-    return count;
+    count
 }
 
 #[aoc_generator(day3, part2)]
 pub fn to_claims2(inp: &str) -> Vec<Claim> {
     let re = Regex::new(r"^#(\d+) @ (\d+),(\d+): (\d+)x(\d+)").unwrap();
     inp.lines()
-        .into_iter()
         .map(move |i| {
             let caps = re.captures(i).unwrap();
             Claim {
@@ -137,7 +135,7 @@ pub fn to_claims2(inp: &str) -> Vec<Claim> {
 }
 
 #[aoc(day3, part2)]
-pub fn find_unused(claims: &Vec<Claim>) -> u32 {
+pub fn find_unused(claims: &[Claim]) -> u32 {
     let mut squares: [u8; 1_000_000] = [0; 1_000_000];
 
     for claim in claims {

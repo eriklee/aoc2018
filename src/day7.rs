@@ -40,10 +40,10 @@ fn build_graph(pairs: Vec<(char, char)>) -> [Node; 26] {
     let mut res: [Node; 26] = Default::default();
 
     for (src, dst) in pairs {
-        let src_node = res.get_mut((src as u8 - 'A' as u8) as usize).unwrap();
+        let src_node = res.get_mut((src as u8 - b'A') as usize).unwrap();
         src_node.dependents.push(dst);
 
-        let dst_node = res.get_mut((dst as u8 - 'A' as u8) as usize).unwrap();
+        let dst_node = res.get_mut((dst as u8 - b'A') as usize).unwrap();
         dst_node.dep_count += 1;
     }
     res
@@ -68,14 +68,14 @@ fn compute_path(mut inp: [Node; 26]) -> Vec<char> {
 
     while let Some(inv_id) = queue.pop() {
         let id = flip_index(inv_id);
-        res.push((id + 'A' as u8) as char);
+        res.push((id + b'A') as char);
         let deps = {
             let src = inp.get(id as usize).unwrap();
             assert!(src.dep_count == 0);
             src.dependents.clone()
         };
         for dep in deps {
-            let index = (dep as u8 - 'A' as u8) as usize;
+            let index = (dep as u8 - b'A') as usize;
             let mut n = inp.get_mut(index).unwrap();
             n.dep_count -= 1;
             if n.dep_count == 0 {
@@ -184,9 +184,9 @@ fn compute_timing(mut inp: [Node; 26]) -> usize {
 }
 
 fn show_job_id(id: u8) -> char {
-    (id + ('A' as u8)) as char
+    (id + (b'A')) as char
 }
 
 fn letter_to_index(letter: char) -> usize {
-    (letter as u8 - 'A' as u8) as usize
+    (letter as u8 - b'A') as usize
 }

@@ -17,7 +17,7 @@ pub fn part1_g(inp: &str) -> Vec<(Id, Coord)> {
 }
 
 #[aoc(day6, part1)]
-pub fn part1(points: &Vec<(Id, Coord)>) -> usize {
+pub fn part1(points: &[(Id, Coord)]) -> usize {
     let (x_max, y_max) = get_bounds(points);
     let mut grid = build_grid(x_max, y_max);
 
@@ -56,7 +56,7 @@ pub fn part1(points: &Vec<(Id, Coord)>) -> usize {
 // Had a vague intuition this might be more natural.
 // It also happens to be quite a lot faster and I'm not exactly sure why...
 #[aoc(day6, part1, inside_out)]
-pub fn part1_io(points: &Vec<(Id, Coord)>) -> usize {
+pub fn part1_io(points: &[(Id, Coord)]) -> usize {
     let (x_max, y_max) = get_bounds(points);
     let mut grid = Vec::with_capacity(x_max * y_max as usize);
 
@@ -93,7 +93,7 @@ pub fn part1_io(points: &Vec<(Id, Coord)>) -> usize {
 }
 
 #[aoc(day6, part2)]
-pub fn part2(points: &Vec<(Id, Coord)>) -> usize {
+pub fn part2(points: &[(Id, Coord)]) -> usize {
     let (x_max, y_max) = get_bounds_fold(points);
     let mut res = 0;
 
@@ -109,19 +109,19 @@ pub fn part2(points: &Vec<(Id, Coord)>) -> usize {
     res
 }
 
-fn get_areas(grid: &Vec<(Option<Id>, usize)>) -> Counter<Id> {
-    grid.into_iter().map(|x| x.0).filter_map(|x| x).collect()
+fn get_areas(grid: &[(Option<Id>, usize)]) -> Counter<Id> {
+    grid.iter().map(|x| x.0).filter_map(|x| x).collect()
 }
 
 // Anything on an edge will have an infinite area
-fn get_edges(grid: &Vec<(Option<Id>, usize)>, (x_max, y_max): Coord) -> HashSet<Id> {
+fn get_edges(grid: &[(Option<Id>, usize)], (x_max, y_max): Coord) -> HashSet<Id> {
     let mut res = HashSet::new();
     let edges = (0..x_max) // Top
         .chain((x_max * (y_max - 1))..(x_max * y_max)) // Bottom
         .chain((0..(x_max * (y_max - 1))).step_by(x_max as usize)) // Left Edge
         .chain(((x_max - 1)..(x_max * y_max)).step_by(x_max as usize)); // Right Edge
-    for p in edges.into_iter() {
-        if let Some(id) = grid.get(p as usize).unwrap().0 {
+    for p in edges {
+        if let Some(id) = grid[p as usize].0 {
             res.insert(id);
         }
     }
@@ -141,7 +141,7 @@ fn build_grid(x_max: usize, y_max: usize) -> Vec<(Option<Id>, usize)> {
     grid
 }
 
-fn get_bounds(inp: &Vec<(Id, Coord)>) -> (usize, usize) {
+fn get_bounds(inp: &[(Id, Coord)]) -> (usize, usize) {
     let mut x_max = 0;
     let mut y_max = 0;
     for &(_, (x, y)) in inp {
@@ -155,8 +155,8 @@ fn get_bounds(inp: &Vec<(Id, Coord)>) -> (usize, usize) {
     (x_max as usize, y_max as usize)
 }
 
-fn get_bounds_fold(inp: &Vec<(Id, Coord)>) -> (usize, usize) {
-    let (x_max, y_max) = inp.into_iter().fold((0, 0), |(x_max, y_max), (_, (x, y))| {
+fn get_bounds_fold(inp: &[(Id, Coord)]) -> (usize, usize) {
+    let (x_max, y_max) = inp.iter().fold((0, 0), |(x_max, y_max), (_, (x, y))| {
         (std::cmp::max(*x, x_max), std::cmp::max(*y, y_max))
     });
     (x_max as usize, y_max as usize)

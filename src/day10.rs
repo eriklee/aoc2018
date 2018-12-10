@@ -13,7 +13,6 @@ fn parse_points(inp: &str) -> Vec<Point> {
     let re = Regex::new(r"^position=<\s*([\d-]+),\s*([\d-]+)> velocity=<\s*([\d-]+),\s*([\d-]+)>$")
         .expect("invalid regex");
     inp.lines()
-        .into_iter()
         .map(move |i| {
             let caps = re.captures(i).expect("No captures in line");
             Point {
@@ -27,9 +26,9 @@ fn parse_points(inp: &str) -> Vec<Point> {
 }
 
 #[aoc(day10, part1)]
-fn part1(points: &Vec<Point>) -> String {
+fn part1(points: &[Point]) -> String {
     let mut score: usize = std::usize::MAX;
-    let mut points = points.clone();
+    let mut points = points.to_owned();
     let mut step_count = 0;
 
     loop {
@@ -49,21 +48,21 @@ fn part1(points: &Vec<Point>) -> String {
     "reclrnze".to_owned()
 }
 
-fn iterate_points(points: &mut Vec<Point>) {
+fn iterate_points(points: &mut [Point]) {
     for p in points.iter_mut() {
         p.x += p.v_x;
         p.y += p.v_y;
     }
 }
 
-fn uniterate_points(points: &mut Vec<Point>) {
+fn uniterate_points(points: &mut [Point]) {
     for p in points.iter_mut() {
         p.x -= p.v_x;
         p.y -= p.v_y;
     }
 }
 
-fn calc_score(points: &Vec<Point>) -> usize {
+fn calc_score(points: &[Point]) -> usize {
     use std::cmp::{max, min};
     let (mut min_y, mut max_y) = (std::i32::MAX, std::i32::MIN);
 
@@ -74,7 +73,7 @@ fn calc_score(points: &Vec<Point>) -> usize {
     (max_y - min_y) as usize
 }
 
-fn show_points(points: &Vec<Point>) {
+fn show_points(points: &[Point]) {
     let mut sorted: Vec<(i32, i32)> = points.iter().map(|p| (p.y, p.x)).collect();
     sorted.sort();
     sorted.dedup();

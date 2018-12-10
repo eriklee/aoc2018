@@ -6,7 +6,7 @@ fn part1(nums: &[u8]) -> usize {
 
 #[aoc(day5, part2)]
 fn part2(inp: &[u8]) -> usize {
-    (('A' as u8)..('Z' as u8))
+    (b'A'..b'Z')
         .map(|bad| dedup(inp, bad).len())
         .min()
         .unwrap_or(0)
@@ -14,7 +14,7 @@ fn part2(inp: &[u8]) -> usize {
 
 fn dedup(nums: &[u8], bad: u8) -> Vec<u8> {
     let mut res = Vec::new();
-    for &y in nums.into_iter().filter(|&x| x & (255 - 32) != bad) {
+    for &y in nums.iter().filter(|&x| x & (255 - 32) != bad) {
         if let Some(&x) = res.last() {
             // the difference between lowercase and capital ascii
             // characters is 1 bit. It's almost as though someone
@@ -34,7 +34,7 @@ fn dedup(nums: &[u8], bad: u8) -> Vec<u8> {
 #[aoc(day5, part2, maybe_cleaner)]
 fn part2_2(inp: &[u8]) -> usize {
     let cleaned = initial_clean(inp);
-    (('A' as u8)..('Z' as u8))
+    (b'A'..b'Z')
         .map(|bad| dedup2(&cleaned, bad))
         .min()
         .unwrap_or(0)
@@ -42,7 +42,7 @@ fn part2_2(inp: &[u8]) -> usize {
 
 fn initial_clean(nums: &[u8]) -> Vec<u8> {
     let mut res = Vec::new();
-    for &y in nums.into_iter() {
+    for &y in nums.iter() {
         if res.last().map(|&l| l ^ y == 32).unwrap_or(false) {
             res.pop();
         } else {
@@ -52,9 +52,9 @@ fn initial_clean(nums: &[u8]) -> Vec<u8> {
     res
 }
 
-fn dedup2(nums: &Vec<u8>, bad: u8) -> usize {
+fn dedup2(nums: &[u8], bad: u8) -> usize {
     let mut res = Vec::new();
-    for y in nums.into_iter().filter(|&x| x & (255 - 32) != bad) {
+    for y in nums.iter().filter(|&x| x & (255 - 32) != bad) {
         if res.last().map(|&l| l ^ y == 32).unwrap_or(false) {
             res.pop();
         } else {

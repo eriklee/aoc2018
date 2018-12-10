@@ -163,7 +163,7 @@ impl CircBuffer {
     }
 
     #[allow(dead_code)]
-    fn show(self: &Self) -> () {
+    fn show(self: &Self) {
         println!(
             "{:?} ={:?}= {:?}",
             self.ccw,

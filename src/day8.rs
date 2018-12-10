@@ -27,7 +27,7 @@ pub fn part1(inp: &str) -> usize {
         .filter_map(|x| x.ok())
         .collect();
     let (node, rest) = create_node(&nums[..]);
-    assert!(rest.len() == 0);
+    assert!(rest.is_empty());
     part1_computation(&node)
 }
 
@@ -46,17 +46,17 @@ pub fn part2(inp: &str) -> usize {
         .filter_map(|x| x.ok())
         .collect();
     let (node, rest) = create_node(&nums[..]);
-    assert!(rest.len() == 0);
+    assert!(rest.is_empty());
 
     get_node_value(&node)
 }
 
 fn get_node_value(node: &ParsedNode) -> usize {
     if node.children.is_empty() {
-        return node.metadata.iter().map(|x| *x as usize).sum();
+        node.metadata.iter().map(|x| *x as usize).sum()
     } else {
         let mut res = 0;
-        for ind in node.metadata.into_iter() {
+        for ind in node.metadata.iter() {
             if *ind == 0 {
                 continue;
             }
@@ -64,6 +64,6 @@ fn get_node_value(node: &ParsedNode) -> usize {
                 res += get_node_value(child);
             }
         }
-        return res;
+        res
     }
 }
