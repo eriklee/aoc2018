@@ -157,3 +157,64 @@ fn transpose(rows: &[Vec<i8>]) -> Vec<Vec<i8>> {
     }
     cols
 }
+
+#[aoc(day11, part2, sat)]
+fn part2_sat(rows: &[Vec<i8>]) -> String {
+    let sat = build_sat(&rows);
+    let mut best = std::i64::MIN;
+    let mut best_size = 0;
+    let mut best_coords = (0, 0);
+
+    for y in 1..=300 {
+        for x in 1..=300 {
+            let max_size = 301 - std::cmp::max(x, y);
+            for size in 1..=max_size {
+                let score = get_sat_score(x, y, size, &sat);
+
+                if score > best {
+                    best = score;
+                    best_coords = (x, y);
+                    best_size = size;
+                }
+            }
+        }
+    }
+    println!(
+        "Best Score: {} at {:?} sized {}",
+        best, best_coords, best_size
+    );
+    format!("{},{},{}", best_coords.0, best_coords.1, best_size)
+}
+
+fn get_sat_score(x: usize, y: usize, size: usize, sat: &[Vec<i64>]) -> i64 {
+    let tl = sat[y - 1][x - 1];
+    let tr = sat[y - 1][x + size - 1];
+    let bl = sat[y + size - 1][x - 1];
+    let br = sat[y + size - 1][x + size - 1];
+
+    br + tl - tr - bl
+}
+
+fn build_sat(rows: &[Vec<i8>]) -> Vec<Vec<i64>> {
+    let mut tab = Vec::new();
+
+    // Want to put in an empty row/col so the get_sat_score fn is simpler
+    let mut row = Vec::new();
+    for _ in 0..rows[0].len() + 1 {
+        row.push(0);
+    }
+    tab.push(row);
+
+    for y in 0..rows.len() {
+        let mut row = vec![0];
+        let mut row_sum = 0;
+        for x in 0..rows[y].len() {
+            row_sum += i64::from(rows[y][x]);
+            // The prev rows indexing is a bit funky due to the shift
+            let prev_row_sum = tab[y][x + 1];
+            row.push(row_sum + prev_row_sum);
+        }
+        tab.push(row);
+    }
+    tab
+}
