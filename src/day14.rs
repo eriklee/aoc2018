@@ -18,7 +18,7 @@ pub fn part1(inp: &str) -> String {
     println!("{:?}", &board[max..(max + 10)]);
     board[max..(max + 10)]
         .iter()
-        .map(|n| std::char::from_digit(*n as u32, 10).unwrap())
+        .map(|n| std::char::from_digit(u32::from(*n), 10).unwrap())
         .collect()
 }
 
@@ -58,8 +58,8 @@ fn elf_scores(board: &Board, elves: &Elves) -> Vec<Score> {
     res
 }
 
-fn find_new_recipes(inp: &Vec<Score>) -> Vec<Score> {
-    let mut sum: usize = inp.into_iter().map(|n| *n as usize).sum();
+fn find_new_recipes(inp: &[Score]) -> Vec<Score> {
+    let mut sum: usize = inp.iter().map(|n| *n as usize).sum();
     if sum == 0 {
         return vec![0];
     }
@@ -78,7 +78,7 @@ fn add_new_recipes(board: &mut Board, new_recipes: &mut Vec<Score>) {
     board.append(new_recipes);
 }
 
-fn cycle_elves(board_len: usize, elves: &Elves, scores: &Vec<Score>) -> Elves {
+fn cycle_elves(board_len: usize, elves: &Elves, scores: &[Score]) -> Elves {
     elves
         .iter()
         .zip(scores.iter())

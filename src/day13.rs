@@ -263,7 +263,7 @@ fn part2((grid, carts): &(Grid, Carts)) -> String {
 
 #[allow(unused)]
 fn print_grid(grid: &Grid) {
-    let mut gps: Vec<Point> = grid.points.keys().map(|p| *p).collect();
+    let mut gps: Vec<Point> = grid.points.keys().cloned().collect();
     gps.sort();
     for p in gps {
         println!("{:?} - {:?}", p, grid.points[&p])
@@ -285,7 +285,7 @@ fn step_cart(grid: &Grid, cart: &Cart) -> Cart {
 
 fn tick(grid: &Grid, carts: &Carts) -> Result<Carts, Point> {
     let mut ticked_carts = HashMap::with_capacity(carts.carts.len());
-    let mut cart_keys = carts.carts.keys().map(|p| *p).collect::<Vec<Point>>();
+    let mut cart_keys = carts.carts.keys().cloned().collect::<Vec<Point>>();
     cart_keys.sort();
 
     for cart_id in cart_keys.iter() {
@@ -302,14 +302,14 @@ fn tick(grid: &Grid, carts: &Carts) -> Result<Carts, Point> {
             return Err(next_loc);
         }
     }
-    return Ok(Carts {
+    Ok(Carts {
         carts: ticked_carts,
-    });
+    })
 }
 
 fn tick2(grid: &Grid, carts: &Carts) -> Carts {
     let mut ticked_carts = HashMap::with_capacity(carts.carts.len());
-    let mut cart_keys = carts.carts.keys().map(|p| *p).collect::<Vec<Point>>();
+    let mut cart_keys = carts.carts.keys().cloned().collect::<Vec<Point>>();
     cart_keys.sort();
 
     let mut skip_carts = HashSet::new();
@@ -333,9 +333,9 @@ fn tick2(grid: &Grid, carts: &Carts) -> Carts {
         }
     }
     assert!(ticked_carts.len() % 2 == 1);
-    return Carts {
+    Carts {
         carts: ticked_carts,
-    };
+    }
 }
 
 fn next_direction(

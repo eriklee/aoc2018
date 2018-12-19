@@ -200,7 +200,7 @@ fn build_sat(rows: &[Vec<i8>]) -> Vec<Vec<i64>> {
 
     // Want to put in an empty row/col so the get_sat_score fn is simpler
     let mut row = Vec::new();
-    for _ in 0..rows[0].len() + 1 {
+    for _ in 0..=rows[0].len() {
         row.push(0);
     }
     tab.push(row);

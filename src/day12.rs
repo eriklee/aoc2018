@@ -29,7 +29,7 @@ fn parse_input(inp: &str) -> Box<InitialState> {
         vec: inp_to_vec(&state_match[1]),
         first_index: -5,
     };
-    let rules = parse_rules(&lines.skip(1).collect());
+    let rules = parse_rules(&lines.skip(1).collect::<Vec<&str>>());
 
     Box::new(InitialState { state, rules })
 }
@@ -49,7 +49,7 @@ fn inp_to_vec(inp: &str) -> Vec<bool> {
     res
 }
 
-fn parse_rules(lines: &Vec<&str>) -> Vec<Rule> {
+fn parse_rules(lines: &[&str]) -> Vec<Rule> {
     //.#### => .
     let rule_re = Regex::new(r"([#\.]+) => ([#\.])").unwrap();
     lines
@@ -57,7 +57,7 @@ fn parse_rules(lines: &Vec<&str>) -> Vec<Rule> {
         .map(move |rl| {
             let caps = rule_re.captures(rl).unwrap();
             let input = inp_to_arr(&caps[1]);
-            let output = caps[2].to_owned() == "#";
+            let output = caps[2] == *"#";
             Rule { input, output }
         })
         .collect()
@@ -92,7 +92,7 @@ fn part2(inp: &InitialState) -> i64 {
     let mut score = 0;
     let mut diff = 0;
 
-    let max: i64 = 50_000_000_0000;
+    let max: i64 = 500_000_000_000;
     for g in 1..=max {
         state = iterate_state(&rules, &state);
         let new_score = score_state(&state);
