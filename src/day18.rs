@@ -46,14 +46,12 @@ fn neighborhood(x: usize, y: usize, state: &State) -> Vec<CellTy> {
     let mut res = Vec::new();
     for yn in clamp(y)..=(y + 1) {
         for xn in clamp(x)..=(x + 1) {
-            //print!("{},{} ", xn, yn);
             if (x, y) != (xn, yn) {
                 res.push(state.get(yn).and_then(|yl| yl.get(xn)));
             }
         }
     }
-    //println!();
-    return res.into_iter().filter_map(|x| x).map(|x| *x).collect();
+    res.into_iter().filter_map(|x| x).cloned().collect()
 }
 fn step_state(prev: &State) -> State {
     let mut outer = Vec::new();
@@ -62,7 +60,6 @@ fn step_state(prev: &State) -> State {
         for (x, cell) in yl.iter().enumerate() {
             let neighbors = neighborhood(x, y, &prev);
             let next_cell = step_cell(*cell, &neighbors);
-            //println!("{:?} ({:?}) => {:?}", (x, y, cell), neighbors, next_cell);
             inner.push(next_cell);
         }
         outer.push(inner);
@@ -70,7 +67,7 @@ fn step_state(prev: &State) -> State {
     outer
 }
 
-fn step_cell(cell: CellTy, neighbors: &Vec<CellTy>) -> CellTy {
+fn step_cell(cell: CellTy, neighbors: &[CellTy]) -> CellTy {
     use self::CellTy::*;
     match cell {
         Open => step_open(neighbors),
@@ -79,7 +76,7 @@ fn step_cell(cell: CellTy, neighbors: &Vec<CellTy>) -> CellTy {
     }
 }
 
-fn step_open(neighbors: &Vec<CellTy>) -> CellTy {
+fn step_open(neighbors: &[CellTy]) -> CellTy {
     use self::CellTy::*;
     if neighbors.iter().filter(|c| **c == Trees).count() >= 3 {
         Trees
@@ -88,7 +85,7 @@ fn step_open(neighbors: &Vec<CellTy>) -> CellTy {
     }
 }
 
-fn step_trees(neighbors: &Vec<CellTy>) -> CellTy {
+fn step_trees(neighbors: &[CellTy]) -> CellTy {
     use self::CellTy::*;
     if neighbors.iter().filter(|c| **c == Lumberyard).count() >= 3 {
         Lumberyard
@@ -97,7 +94,7 @@ fn step_trees(neighbors: &Vec<CellTy>) -> CellTy {
     }
 }
 
-fn step_lumberyard(neighbors: &Vec<CellTy>) -> CellTy {
+fn step_lumberyard(neighbors: &[CellTy]) -> CellTy {
     use self::CellTy::*;
     if neighbors.iter().filter(|c| **c == Trees).count() >= 1
         && neighbors.iter().filter(|c| **c == Lumberyard).count() >= 1
@@ -110,7 +107,7 @@ fn step_lumberyard(neighbors: &Vec<CellTy>) -> CellTy {
 
 #[aoc(day18, part1)]
 fn part1(initial_state: &State) -> usize {
-    let mut state: State = initial_state.clone();
+    let mut state: State = initial_state.to_owned();
 
     for _ in 0..10 {
         state = step_state(&state);
@@ -122,7 +119,7 @@ fn part1(initial_state: &State) -> usize {
 
 #[aoc(day18, part2)]
 fn part2(initial_state: &State) -> usize {
-    let mut state: State = initial_state.clone();
+    let mut state: State = initial_state.to_owned();
     let mut hm = HashMap::new();
 
     for i in 1..1_000_000_000 {
