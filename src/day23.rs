@@ -69,12 +69,13 @@ fn run_z3(bots: &[Bot]) -> (i64, i64, i64) {
     let ctx = z3::Context::new(&cfg);
     let opt = z3::Optimize::new(&ctx);
 
-    let zero = ctx.from_i64(0);
-    let one = ctx.from_i64(1);
-
     let x = ctx.named_int_const("x");
     let y = ctx.named_int_const("y");
     let z = ctx.named_int_const("z");
+
+    // constants and helpers
+    let zero = ctx.from_i64(0);
+    let one = ctx.from_i64(1);
 
     fn abs<'a>(zero: &z3::Ast<'a>, n: &z3::Ast<'a>) -> z3::Ast<'a> {
         n.le(zero).ite(&zero.sub(&[n]), n)
@@ -82,19 +83,19 @@ fn run_z3(bots: &[Bot]) -> (i64, i64, i64) {
 
     let mut dist_asts: HashMap<Bot, z3::Ast> = HashMap::new();
     for bot in bots {
-        let ast = ctx.fresh_int_const("bot");
         let x_dist = ctx.fresh_int_const("x_dist");
-        let x_abs = abs(&zero, &x_dist);
         opt.assert(&x_dist._eq(&x.sub(&[&ctx.from_i64(bot.x)])));
-        opt.assert(&x_abs._eq(&abs(&zero, &x_dist)));
+        let x_abs = abs(&zero, &x_dist);
+
         let y_dist = ctx.fresh_int_const("y_dist");
-        let y_abs = ctx.fresh_int_const("y_abs");
         opt.assert(&y_dist._eq(&y.sub(&[&ctx.from_i64(bot.y)])));
-        opt.assert(&y_abs._eq(&abs(&zero, &y_dist)));
+        let y_abs = abs(&zero, &y_dist);
+
         let z_dist = ctx.fresh_int_const("z_dist");
-        let z_abs = ctx.fresh_int_const("z_abs");
         opt.assert(&z_dist._eq(&z.sub(&[&ctx.from_i64(bot.z)])));
-        opt.assert(&z_abs._eq(&abs(&zero, &z_dist)));
+        let z_abs = abs(&zero, &z_dist);
+
+        let ast = ctx.fresh_int_const("bot");
         let fin = ast._eq(
             &zero
                 .add(&[&x_abs, &y_abs, &z_abs])
@@ -105,12 +106,11 @@ fn run_z3(bots: &[Bot]) -> (i64, i64, i64) {
         dist_asts.insert(*bot, ast);
     }
     // 138697281
-    let count_ast = &ctx
-        .from_i64(0)
-        .add(&dist_asts.values().collect::<Vec<&z3::Ast>>());
+    let count_ast = &zero.add(&dist_asts.values().collect::<Vec<&z3::Ast>>());
     opt.maximize(&count_ast);
     opt.minimize(&zero.add(&[&abs(&zero, &x), &abs(&zero, &y), &abs(&zero, &z)]));
 
+    println!("Context created, solving now!");
     assert!(opt.check());
     let model = opt.get_model();
 
