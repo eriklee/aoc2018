@@ -22,7 +22,7 @@ enum Op {
     EqRR,
 }
 
-type MachineWord = u64;
+type MachineWord = u32;
 type Register = u8;
 type Registers = [MachineWord; 6];
 
@@ -196,7 +196,7 @@ fn run_instns2(ip_reg: usize, instns: &[Inst]) -> MachineWord {
         while !state.step() {}
         let value = state.registers[4];
         //println!("{:?}", value);
-        if !seen.insert(state.registers[4]) {
+        if !seen.insert(value) {
             return last;
         }
         last = value;
